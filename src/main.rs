@@ -2,6 +2,8 @@ use std::{
     fs,
     io::{BufReader, prelude::*},
     net::{TcpListener, TcpStream},
+    thread,
+    time::Duration,
 };
 fn main() {
     let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
@@ -24,6 +26,10 @@ fn handle_connection(mut stream: TcpStream) {
     let filename: &str;
 
     if request_line == "GET / HTTP/1.1" {
+        status_line = "HTTP/1.1 200 OK";
+        filename = "hello.html";
+    } else if  request_line == "GET /sleep HTTP/1.1" {
+        thread::sleep(Duration::from_secs(10));
         status_line = "HTTP/1.1 200 OK";
         filename = "hello.html";
     } else {

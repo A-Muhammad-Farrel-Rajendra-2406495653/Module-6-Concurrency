@@ -23,4 +23,7 @@ Ketiga komponen itu digabung jadi satu string dengan aturan pemisahan, yaitu Sta
 Untuk kasus ini, pemisahan response untuk masing-masing request bisa kita lakukan dengan memanfaatkan `Vec` dari variabel `http_request` yang sebelumnya sudah kita miliki untuk mendapatkan HTTP Method milik request tersebut dengan mengambil elemen pertama `Vec` itu.  
 Lalu, ambil nilai elemen pertama itu dengan (unwrap()) dan bandingkan dengan kondisional if-else. Jika HTTP Method nya `GET / HTTP/1.1`, kita kembalikan response dengan `HTTP/1.1 200 OK` sebagai status line dan `hello.html` sebgai HTML pesan sukse yang akan dirender.  
 Jika HTTP Method-nya selain itu, kita kembalikan response dengan `HTTP/1.1 404 NOT FOUND` sebagai status line dan `bad.html` sebgai HTML pesan error yang akan dirender.  
-Akhirnya kita berhasil memisahkan response sesuai dnegan request-nya.
+Akhirnya kita berhasil memisahkan response sesuai dnegan request-nya.  
+
+## Commit 4 Reflection Notes  
+Seperti yang terlihat di `main`, for loop berisi `handle_connection()` akan menangani setiap percobaan terhubung ke server. Tapi saat `/sleep` mencoba terhubung, `thread::sleep(Duration::from_secs(10))` membuat thread yang sedang menjalankan kode ini berhenti selama 10 detik sebelum response dibuat. Lalu, kode ini masih menerapkan single-threading. Akibatnya, ketika memanggil `/sleep` sebelum `/`, keduanya akan sama-sama menunggu selama sepuluh detik sebelum keduanya berjalan. Hal itu terjadi karena thread yang mengeksekusi program hanya dan satu dan itupun harus menunggu 10 detik dahulu sebelum respons untuk masing-masing request dibuat. Maka dari itu, bisa disimpulkan bahwa kode ini akan berjalan sangat lambat jika ada banyak pengguna yang mengaksesnya, dan itu tidak bagus.  
