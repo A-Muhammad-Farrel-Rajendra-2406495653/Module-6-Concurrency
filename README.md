@@ -16,4 +16,11 @@ Setelah membaca request dari broweser,server membangun sebuah paket data yang me
 * Header: berisi jumlah byte dari isi file `hello.html` yang dihitung dengan `contents.len()`, sehinggab browser tahu berapa data yang harus ia baca.  
 * Body: isi dari file `hello.html` yag dibaca menggunakan `fs::read_to_string`.  
 
-Ketiga komponen itu digabung jadi satu string dengan aturan pemisahan, yaitu Status Line dan Header dipisahkan oleh satu baris baru (`\r\n`) dan Header dengan Body dipisahkan oleh dua baris baru (`\r\n\r\n`). Lalu, paket data itu diubah jadi deretan byte yang akan dimasukkan ke dalam `TcpStream` (pakai `stream.write_all(response.as_bytes()).unwrap()`), sehingga paket data itu bisa dikirim sebagai response ke browser.
+Ketiga komponen itu digabung jadi satu string dengan aturan pemisahan, yaitu Status Line dan Header dipisahkan oleh satu baris baru (`\r\n`) dan Header dengan Body dipisahkan oleh dua baris baru (`\r\n\r\n`). Lalu, paket data itu diubah jadi deretan byte yang akan dimasukkan ke dalam `TcpStream` (pakai `stream.write_all(response.as_bytes()).unwrap()`), sehingga paket data itu bisa dikirim sebagai response ke browser.  
+
+## Commit 3 Reflection Notes  
+![alt text](image_commit3.png)
+Untuk kasus ini, pemisahan response untuk masing-masing request bisa kita lakukan dengan memanfaatkan `Vec` dari variabel `http_request` yang sebelumnya sudah kita miliki untuk mendapatkan HTTP Method milik request tersebut dengan mengambil elemen pertama `Vec` itu.  
+Lalu, ambil nilai elemen pertama itu dengan (unwrap()) dan bandingkan dengan kondisional if-else. Jika HTTP Method nya `GET / HTTP/1.1`, kita kembalikan response dengan `HTTP/1.1 200 OK` sebagai status line dan `hello.html` sebgai HTML pesan sukse yang akan dirender.  
+Jika HTTP Method-nya selain itu, kita kembalikan response dengan `HTTP/1.1 404 NOT FOUND` sebagai status line dan `bad.html` sebgai HTML pesan error yang akan dirender.  
+Akhirnya kita berhasil memisahkan response sesuai dnegan request-nya.
