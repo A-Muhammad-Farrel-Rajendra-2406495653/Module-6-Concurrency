@@ -1,3 +1,4 @@
+use hello::ThreadPool;
 use std::{
     fs,
     io::{BufReader, prelude::*},
@@ -5,11 +6,16 @@ use std::{
     thread,
     time::Duration,
 };
+
 fn main() {
     let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
+    let pool = ThreadPool::new(4);
+
     for stream in listener.incoming() {
         let stream = stream.unwrap();
-        handle_connection(stream);
+        pool.execute(|| {
+            handle_connection(stream);
+        });
     }
 }
 fn handle_connection(mut stream: TcpStream) {
@@ -28,7 +34,7 @@ fn handle_connection(mut stream: TcpStream) {
     if request_line == "GET / HTTP/1.1" {
         status_line = "HTTP/1.1 200 OK";
         filename = "hello.html";
-    } else if  request_line == "GET /sleep HTTP/1.1" {
+    } else if request_line == "GET /sleep HTTP/1.1" {
         thread::sleep(Duration::from_secs(10));
         status_line = "HTTP/1.1 200 OK";
         filename = "hello.html";
